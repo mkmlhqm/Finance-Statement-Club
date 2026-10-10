@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Rekod Kewangan</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans pb-20">
+
+  <!-- Header -->
+  <header class="bg-orange-500 text-white p-4 flex justify-between items-center shadow-md">
+    <h1 class="text-xl font-bold">Pengurusan Kewangan</h1>
+    <button onclick="toggleMenu()" class="text-2xl focus:outline-none">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <!-- Sidebar Menu (Diilhamkan daripada menu profail) -->
+  <div id="sidebar" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden z-50">
+    <div class="bg-white w-64 h-full p-5 flex flex-col justify-between shadow-lg">
+      <div>
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-xl">
+            MK
+          </div>
+          <div>
+            <h2 class="font-bold text-gray-800">Akaun Saya</h2>
+            <p class="text-xs text-gray-500">Pengguna Aktif</p>
+          </div>
+        </div>
+        <hr class="mb-4">
+        <nav class="space-y-3">
+          <a href="#" onclick="showSection('rekod')" class="flex items-center space-x-3 text-gray-700 hover:text-orange-500">
+            <i class="fa-solid fa-wallet"></i> <span>Rekod Transaksi</span>
+          </a>
+          <a href="#" onclick="showSection('laporan')" class="flex items-center space-x-3 text-gray-700 hover:text-orange-500">
+            <i class="fa-solid fa-chart-line"></i> <span>Laporan Kewangan</span>
+          </a>
+        </nav>
+      </div>
+      <div class="text-xs text-gray-400 border-t pt-3">
+        Sistem Kewangan v1.0.0
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="p-4 max-w-md mx-auto">
+
+    <!-- Seksyen 1: Rekod Transaksi -->
+    <section id="section-rekod" class="space-y-4">
+      <!-- Ringkasan Baki -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 grid grid-cols-2 gap-2 text-center">
+        <div>
+          <p class="text-xs text-gray-500">Jumlah Pendapatan</p>
+          <p id="total-masuk" class="text-lg font-bold text-green-600">RM 0.00</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500">Jumlah Perbelanjaan</p>
+          <p id="total-keluar" class="text-lg font-bold text-red-600">RM 0.00</p>
+        </div>
+      </div>
+
+      <!-- Borang Tambah Rekod -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="font-bold text-gray-700 mb-3">Tambah Transaksi Baru</h2>
+        <form id="finance-form" class="space-y-3">
+          <div>
+            <label class="block text-xs text-gray-600 mb-1">Keterangan</label>
+            <input type="text" id="desc" placeholder="Contoh: Gaji / Beli Barangan" class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:border-orange-500" required>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-600 mb-1">Amaun (RM)</label>
+            <input type="number" step="0.01" id="amount" placeholder="0.00" class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:border-orange-500" required>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-600 mb-1">Jenis</label>
+            <select id="type" class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:border-orange-500">
+              <option value="masuk">Pendapatan (Masuk)</option>
+              <option value="keluar">Perbelanjaan (Keluar)</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full bg-orange-500 text-white font-bold py-2 rounded-lg hover:bg-orange-600 transition">Simpan Rekod</button>
+        </form>
+      </div>
+
+      <!-- Senarai Rekod -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="font-bold text-gray-700 mb-3">Sejarah Transaksi</h2>
+        <ul id="transaction-list" class="divide-y text-sm">
+          <li class="py-2 text-center text-gray-400">Memuatkan data...</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Seksyen 2: Laporan Kewangan -->
+    <section id="section-laporan" class="hidden space-y-4">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="font-bold text-gray-700 mb-2">Ringkasan Laporan</h2>
+        <div class="border-t pt-3 space-y-2">
+          <div class="flex justify-between text-sm">
+            <span>Baki Bersih:</span>
+            <span id="baki-bersih" class="font-bold text-gray-800">RM 0.00</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span>Jumlah Transaksi:</span>
+            <span id="total-count" class="font-bold text-gray-800">0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Bar (Diilhamkan daripada navigasi bawah) -->
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t flex justify-around py-2 shadow-lg z-40">
+    <button onclick="showSection('rekod')" class="flex flex-col items-center text-orange-500 focus:outline-none">
+      <i class="fa-solid fa-list text-lg"></i>
+      <span class="text-xs">Rekod</span>
+    </button>
+    <button onclick="showSection('laporan')" class="flex flex-col items-center text-gray-400 hover:text-orange-500 focus:outline-none">
+      <i class="fa-solid fa-chart-pie text-lg"></i>
+      <span class="text-xs">Laporan</span>
+    </button>
+  </nav>
+
+  <!-- Firebase Integration Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Masukkan Konfigurasi Firebase Anda
+    const firebaseConfig = {
+      apiKey: "API_KEY_ANDA",
+      authDomain: "PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "PROJECT_ID",
+      storageBucket: "PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    // Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'kewangan');
+
+    // Handle Form Submit
+    document.getElementById('finance-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const desc = document.getElementById('desc').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const type = document.getElementById('type').value;
+
+      push(dbRef, {
+        desc: desc,
+        amount: amount,
+        type: type,
+        timestamp: Date.now()
+      });
+
+      document.getElementById('finance-form').reset();
+    });
+
+    // Baca Data dari Firebase Realtime
+    onValue(dbRef, (snapshot) => {
+      const list = document.getElementById('transaction-list');
+      list.innerHTML = '';
+
+      let totalMasuk = 0;
+      let totalKeluar = 0;
+      let count = 0;
+
+      if (!snapshot.exists()) {
+        list.innerHTML = '<li class="py-2 text-center text-gray-400">Tiada rekod dijumpai.</li>';
+      } else {
+        snapshot.forEach((childSnapshot) => {
+          const key = childSnapshot.key;
+          const data = childSnapshot.val();
+          count++;
+
+          if (data.type === 'masuk') totalMasuk += data.amount;
+          if (data.type === 'keluar') totalKeluar += data.amount;
+
+          const li = document.createElement('li');
+          li.className = 'py-2 flex justify-between items-center';
+          li.innerHTML = `
+            <div>
+              <p class="font-semibold text-gray-800">${data.desc}</p>
+              <p class="text-xs ${data.type === 'masuk' ? 'text-green-500' : 'text-red-500'}">${data.type.toUpperCase()}</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold ${data.type === 'masuk' ? 'text-green-600' : 'text-red-600'}">
+                ${data.type === 'masuk' ? '+' : '-'} RM ${data.amount.toFixed(2)}
+              </span>
+              <button onclick="deleteRecord('${key}')" class="text-gray-300 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `;
+          list.appendChild(li);
+        });
+      }
+
+      // Kemaskini Paparan Statistik
+      document.getElementById('total-masuk').innerText = `RM ${totalMasuk.toFixed(2)}`;
+      document.getElementById('total-keluar').innerText = `RM ${totalKeluar.toFixed(2)}`;
+      document.getElementById('baki-bersih').innerText = `RM ${(totalMasuk - totalKeluar).toFixed(2)}`;
+      document.getElementById('total-count').innerText = count;
+    });
+
+    // Fungsi Padam Rekod
+    window.deleteRecord = (key) => {
+      const itemRef = ref(db, `kewangan/${key}`);
+      remove(itemRef);
+    };
+  </script>
+
+  <script>
+    // Navigasi Seksyen UI
+    function showSection(section) {
+      document.getElementById('section-rekod').classList.add('hidden');
+      document.getElementById('section-laporan').classList.add('hidden');
+      document.getElementById(`section-${section}`).classList.remove('hidden');
+      toggleMenu(true);
+    }
+
+    function toggleMenu(forceClose = false) {
+      const sidebar = document.getElementById('sidebar');
+      if (forceClose) {
+        sidebar.classList.add('hidden');
+      } else {
+        sidebar.classList.toggle('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
